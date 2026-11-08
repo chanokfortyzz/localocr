@@ -18,7 +18,28 @@ export async function renderPage(pdf, pageNumber, dpi) {
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+
+  // pdf.js 的渐进渲染依赖 requestAnimationFrame；浏览器切到后台标签页时 rAF 会被冻结，
+  // 导致批量任务卡死。渲染期间用定时器替代，保证后台也能跑完。
+  const origRaf = window.requestAnimationFrame;
+  const origCancel = window.cancelAnimationFrame;
+  const timers = new Map();
+  window.requestAnimationFrame = (cb) => {
+    const id = window.setTimeout(() => cb(performance.now()), 0);
+    timers.set(id, id);
+    return id;
+  };
+  window.cancelAnimationFrame = (id) => {
+    clearTimeout(id);
+    timers.delete(id);
+  };
+  try {
+    await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+  } finally {
+    window.requestAnimationFrame = origRaf;
+    window.cancelAnimationFrame = origCancel;
+    for (const id of timers.keys()) clearTimeout(id);
+  }
   page.cleanup();
   return canvas;
 }
