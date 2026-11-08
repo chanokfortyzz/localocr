@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LocalOCR — 本地批量 OCR，扫描件转可搜索 PDF（文件不上传）</title>
+<meta name="description" content="在浏览器里批量识别图片和 PDF，导出可搜索 PDF、TXT、Markdown。文件不离开你的电脑，适用于合同、发票、档案等敏感文档。" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>" />
+<link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="mark">L</span>
+    <span>LocalOCR</span>
+  </div>
+  <nav>
+    <a href="#tool">开始识别</a>
+    <a href="#pricing">定价</a>
+    <span id="quota-badge" class="quota">免费额度：--</span>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>扫描件转可搜索 PDF，<br /><span class="accent">文件不离开你的电脑</span></h1>
+    <p class="sub">
+      批量识别 JPG / PNG / PDF，导出可搜索 PDF、纯文本、Markdown。中文与英文混排直接可用。
+      全程在你的浏览器内完成——不上传、不排队、不留副本。
+    </p>
+    <ul class="points">
+      <li>零上传：断网也能用</li>
+      <li>批量：一次拖进上百页</li>
+      <li>可搜索 PDF：文字层保留，能 Ctrl+F、能复制</li>
+    </ul>
+  </section>
+
+  <section id="tool" class="panel">
+    <div id="dropzone" class="dropzone">
+      <input id="file-input" type="file" multiple accept="image/png,image/jpeg,image/webp,application/pdf" hidden />
+      <div class="dz-inner">
+        <div class="dz-icon">⇩</div>
+        <p><strong>把文件拖到这里</strong>，或 <button id="pick-btn" class="link-btn" type="button">选择文件</button></p>
+        <p class="hint">JPG / PNG / WebP / PDF，支持多选</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <label>识别语言
+        <select id="lang">
+          <option value="chi_sim+eng">中文 + 英文</option>
+          <option value="eng">仅英文</option>
+          <option value="chi_sim">仅简体中文</option>
+        </select>
+      </label>
+      <label>PDF 渲染清晰度
+        <select id="dpi">
+          <option value="150">150 DPI（快）</option>
+          <option value="200" selected>200 DPI（推荐）</option>
+          <option value="300">300 DPI（清晰，较慢）</option>
+        </select>
+      </label>
+      <button id="run-btn" class="primary" disabled>开始识别</button>
+    </div>
+
+    <div id="file-list" class="file-list"></div>
+    <div id="status" class="status" hidden></div>
+    <div id="results" class="results" hidden></div>
+  </section>
+
+  <section id="pricing" class="pricing">
+    <h2>定价</h2>
+    <p class="sub">一次性买断，不订阅、不按页计费。购买后无限量、终身可用当前版本。</p>
+    <div class="cards">
+      <div class="card">
+        <h3>免费</h3>
+        <p class="price">¥0</p>
+        <ul>
+          <li>累计 20 页</li>
+          <li>全部导出格式</li>
+          <li>无需注册</li>
+        </ul>
+      </div>
+      <div class="card featured">
+        <h3>买断</h3>
+        <p class="price" id="price-label">¥168</p>
+        <ul>
+          <li>无限页数</li>
+          <li>终身使用当前大版本</li>
+          <li>离线可用，不绑定账号</li>
+        </ul>
+        <button id="buy-btn" class="primary" type="button">获取解锁码</button>
+      </div>
+    </div>
+    <p class="fine">
+      说明：识别引擎与语言包在首次使用时从 CDN 下载，缓存到本地后即可离线运行。过程中只有语言包被下载，你的文档始终只在本机内存里。
+    </p>
+  </section>
+</main>
+
+<footer>
+  <p>LocalOCR · 浏览器本地 OCR 工具</p>
+</footer>
+
+<div id="unlock-modal" class="modal" hidden>
+  <div class="modal-box">
+    <h3>解锁完整版</h3>
+    <p id="unlock-msg" class="hint">免费额度已用完。购买后输入解锁码即可无限使用。</p>
+    <div class="modal-actions">
+      <button id="checkout-btn" class="primary" type="button">前往购买</button>
+      <input id="unlock-code" placeholder="输入解锁码" />
+      <button id="unlock-btn" class="ghost" type="button">解锁</button>
+    </div>
+    <button id="close-modal" class="link-btn" type="button">稍后再说</button>
+  </div>
+</div>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
