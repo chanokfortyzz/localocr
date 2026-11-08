@@ -1,4 +1,4 @@
-import { CHECKOUT_URL, FREE_PAGE_LIMIT, PRICE_DISPLAY } from './config.js';
+import { CHECKOUT_URL, FREE_PAGE_LIMIT, PRICE_DISPLAY, SERVER_URL } from './config.js';
 import { openPdf, renderPage, mergePdfs } from './pdf.js';
 import { ocrCanvas } from './ocr.js';
 import { extractFields, toCsv } from './extract.js';
@@ -351,13 +351,70 @@ $('#buy-btn').addEventListener('click', () => openUnlock(''));
 $('#close-modal').addEventListener('click', () => {
   $('#unlock-modal').hidden = true;
 });
-$('#checkout-btn').addEventListener('click', () => {
+// 授权后台探测：优先用配置的 SERVER_URL；为空则探测同源 /api/health。
+let apiBaseCache;
+async function resolveApiBase() {
+  if (apiBaseCache !== undefined) return apiBaseCache;
+  if (SERVER_URL) {
+    apiBaseCache = SERVER_URL;
+    return apiBaseCache;
+  }
+  try {
+    const r = await fetch('/api/health');
+    const data = r.ok ? await r.json() : null;
+    apiBaseCache = data?.ok ? '' : null;
+  } catch {
+    apiBaseCache = null;
+  }
+  return apiBaseCache;
+}
+
+$('#checkout-btn').addEventListener('click', async () => {
+  const base = await resolveApiBase();
+  if (base === null && !CHECKOUT_URL) {
+    $('#unlock-msg').textContent = '尚未配置收款：部署 server/ 并填写 src/config.js 的 SERVER_URL，或填写 CHECKOUT_URL。';
+    return;
+  }
   if (CHECKOUT_URL) {
     window.open(CHECKOUT_URL, '_blank', 'noopener');
-  } else {
-    $('#unlock-msg').textContent = '购买链接尚未配置（src/config.js 里的 CHECKOUT_URL）。';
+    return;
+  }
+  $('#unlock-msg').textContent = '正在创建订单…';
+  try {
+    const r = await fetch(`${base}/api/orders`, { method: 'POST' });
+    const data = await r.json();
+    if (!r.ok || !data.approveUrl) throw new Error(data.error ? JSON.stringify(data.error) : '下单失败');
+    localStorage.setItem('localocr.pendingOrder', data.id);
+    window.location.href = data.approveUrl;
+  } catch (e) {
+    $('#unlock-msg').textContent = `下单失败：${e.message}`;
   }
 });
+
+// PayPal 付款完成后回跳 ?order=xxx，自动领取解锁码
+async function claimReturnedOrder() {
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get('order') || params.get('token');
+  if (!orderId) return;
+  const base = await resolveApiBase();
+  if (base === null) return;
+  openUnlock('正在确认付款并领取解锁码…');
+  try {
+    const r = await fetch(`${base}/api/orders/${encodeURIComponent(orderId)}/capture`, { method: 'POST' });
+    const data = await r.json();
+    if (!r.ok || !data.code) throw new Error(data.error ? JSON.stringify(data.error) : '领取失败');
+    const payload = await lic.verifyLicenseCode(data.code);
+    if (!payload) throw new Error('服务端签发的解锁码校验失败');
+    lic.saveLicense(payload);
+    $('#unlock-code').value = data.code;
+    $('#unlock-msg').textContent = '付款已确认，此设备已解锁。解锁码也已填入，可保存用于其他设备。';
+    refreshQuota();
+    updateRunState();
+    history.replaceState({}, '', window.location.pathname);
+  } catch (e) {
+    $('#unlock-msg').textContent = `领取失败：${e.message}`;
+  }
+}
 $('#unlock-btn').addEventListener('click', async () => {
   const code = $('#unlock-code').value;
   const payload = await lic.verifyLicenseCode(code);
@@ -374,6 +431,7 @@ $('#unlock-btn').addEventListener('click', async () => {
 refreshQuota();
 renderFiles();
 updateRunState();
+claimReturnedOrder();
 
 // 自动化回归钩子（浏览器测试用，不影响正常交互）
 window.__localocrTest = {

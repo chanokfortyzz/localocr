@@ -211,3 +211,6 @@ footer { border-top: 1px solid var(--line); padding: 24px; text-align: center; c
 .field-table th, .field-table td { border: 1px solid var(--line); padding: 7px 9px; text-align: left; white-space: nowrap; }
 .field-table th { background: #0b1017; color: var(--muted); font-weight: 600; }
 .field-table td.empty { color: #4a5568; }
+
+.footer-links a { color: #7f8ea3; }
+.footer-links a:hover { color: var(--accent); }
