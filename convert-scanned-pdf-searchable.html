@@ -1,0 +1,32 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>扫描件怎么变成可搜索 PDF？（离线批量方法） · LocalOCR</title>
+<meta name="description" content="扫描的 PDF 只能看不能搜怎么办？讲清 OCR 文字层原理，以及在不把文件上传到任何服务器的前提下批量转成可搜索 PDF。"/>
+<link rel="canonical" href="https://chanokfortyzz.github.io/localocr/convert-scanned-pdf-searchable.html"/>
+<meta property="og:title" content="扫描件怎么变成可搜索 PDF？（离线批量方法）"/><meta property="og:description" content="扫描的 PDF 只能看不能搜怎么办？讲清 OCR 文字层原理，以及在不把文件上传到任何服务器的前提下批量转成可搜索 PDF。"/>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"可搜索 PDF 里的文字能编辑吗？","acceptedAnswer":{"@type":"Answer","text":"不能直接编辑。它是在图片上叠加透明文字层，用于检索和复制；要改内容得回到源文件。"}},{"@type":"Question","name":"识别准确率怎么样？","acceptedAnswer":{"@type":"Answer","text":"清晰扫描件中英文都能到可用水平；倾斜、模糊、印章遮挡会影响准确率，重要文件建议抽查。"}}]}</script>
+<style>
+:root{--bg:#0b0e14;--soft:#121722;--line:#202836;--text:#e6ebf2;--muted:#8b98ab;--accent:#4fd1a5}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#16202e,#0b0e14 60%);color:var(--text);font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:40px 22px 80px}a{color:var(--accent)}
+.top{display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;border-bottom:1px solid var(--line);margin-bottom:34px}
+.brand{font-weight:700;letter-spacing:.2px}.brand b{color:var(--accent)}
+h1{font-size:30px;line-height:1.3;letter-spacing:-.4px;margin:0 0 14px}h2{font-size:20px;margin:34px 0 10px}
+p{color:#c3cfdd}ul,ol{color:#c3cfdd}li{margin:6px 0}
+.cta{display:inline-block;margin:22px 0;padding:12px 22px;border-radius:10px;background:linear-gradient(140deg,var(--accent),#35a9d6);color:#05131a;font-weight:700;text-decoration:none}
+.note{border-left:3px solid var(--accent);background:var(--soft);padding:12px 16px;border-radius:8px;color:var(--muted);font-size:14px}
+footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:#5d6a7e;font-size:13px}
+</style></head><body><div class="wrap">
+<div class="top"><span class="brand"><b>Local</b>OCR</span><a href="/">打开工具 →</a></div>
+<h1>扫描件怎么变成可搜索 PDF？</h1>
+<h2>为什么扫描件搜不到字</h2><p>扫描件本质是一张张图片，里面没有文字信息。要让 Ctrl+F、复制、全文检索生效，需要 OCR 识别出文字，再把文字以“不可见文字层”叠加在图片上——这就是可搜索 PDF。</p>
+<h2>常见的三种做法</h2><p>① 在线 OCR 网站：快，但文件要上传到别人服务器，合同、发票、病历通常不适合；② 桌面软件：功能强，但贵、装起来麻烦、批量操作常常要排队；③ 系统自带识别：macOS 实况文本、Windows PowerToys 能识别单张图，但没法把一整批 PDF 变成可搜索 PDF。</p>
+<h2>不上传的做法：在浏览器里识别</h2><p>现代浏览器能直接跑 WebAssembly 版识别引擎。文件只在你的内存里被处理，不经过任何服务器，断网也能用。批量拖进几十上百页，逐页识别并合成一份可搜索 PDF。</p>
+<h2>批量处理时要注意什么</h2><p>页面清晰度建议 200 DPI 以上；中文和英文混排要选对语言模型；处理长任务时不要以为切到别的标签页就一定会继续跑——要选那种后台也不中断的实现。</p>
+<a class="cta" href="/">现在试试 · 文件不上传的批量 OCR</a>
+<div class="note">LocalOCR 在你的浏览器里完成识别：文档不上传，可搜索 PDF 与 CSV 表格直接导出，中文英文混排可用。</div>
+<h2>常见问题</h2>
+<h3>可搜索 PDF 里的文字能编辑吗？</h3><p>不能直接编辑。它是在图片上叠加透明文字层，用于检索和复制；要改内容得回到源文件。</p>
+<h3>识别准确率怎么样？</h3><p>清晰扫描件中英文都能到可用水平；倾斜、模糊、印章遮挡会影响准确率，重要文件建议抽查。</p>
+<footer>LocalOCR · 本地批量 OCR · <a href="/">首页</a> · <a href="/privacy.html">隐私说明</a></footer>
+</div></body></html>
